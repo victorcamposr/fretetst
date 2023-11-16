@@ -1,9 +1,11 @@
 from models import Validator
 from flask import Flask, request, jsonify, send_file
+from flask_cors import CORS
 import pandas as pd
 import io
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
