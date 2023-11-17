@@ -5,9 +5,20 @@ import pandas as pd
 import io
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/upload": {"origins": "https://jetcalcship.web.app"}})
 
 @app.route('/upload', methods=['POST'])
+def handle_upload():
+
+    response = jsonify({"message": "Upload realizado com sucesso!"})
+    response.headers.add("Access-Control-Allow-Origin", "https://jetcalcship.web.app")
+    response.headers.add("Access-Control-Allow-Methods", "POST")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+
+    return response
+
+
+
 def upload_file():
     try:
         # Check if the POST request has the file part
