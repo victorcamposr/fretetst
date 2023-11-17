@@ -41,7 +41,14 @@ async def upload_file():
             output.seek(0)
 
             # Return the updated Excel file to the user asynchronously
-            return await send_file_async(output, 'planilha_atualizada.xlsx', True)
+            response = await send_file_async(output, 'planilha_atualizada.xlsx', True)
+
+            # Adicione os cabeçalhos CORS à resposta
+            response.headers.add("Access-Control-Allow-Origin", "https://jetcalcship.web.app")
+            response.headers.add("Access-Control-Allow-Methods", "POST")
+            response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+
+            return response
 
         else:
             return jsonify({'error': 'Invalid file format, must be .xlsx'}), 400
