@@ -1,3 +1,4 @@
+import asyncio
 from models import Validator
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
@@ -6,6 +7,9 @@ import io
 
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "https://jetcalcship.web.app"}})
+
+def send_file_sync(output, download_name, as_attachment):
+    return send_file(output, download_name=download_name, as_attachment=as_attachment)
 
 @app.route('/upload', methods=['POST'])
 async def upload_file():
@@ -40,8 +44,9 @@ async def upload_file():
             writer.close()
             output.seek(0)
 
-            # Return the updated Excel file to the user asynchronously
-            response = await send_file_async(output, 'planilha_atualizada.xlsx', True)
+            # Save the file asynchronously using run_in_executor
+            loop = asyncio.get_event_loop()
+            response = await loop.run_in_executor(None, send_file_sync, output, 'planilha_atualizada.xlsx', True)
 
             # Adicione os cabeçalhos CORS à resposta
             response.headers.add("Access-Control-Allow-Origin", "https://jetcalcship.web.app")
@@ -56,9 +61,6 @@ async def upload_file():
     except Exception as e:
         print(f"Erro: {str(e)}")  # Imprime o erro no console
         return jsonify({'error': 'Internal Server Error'}), 500
-
-async def send_file_async(output, download_name, as_attachment):
-    return await send_file(output, download_name=download_name, as_attachment=as_attachment)
 
 if __name__ == '__main__':
     app.run(debug=True)
