@@ -8,9 +8,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "https://jetcalcship.web.app"}})
 
 @app.route('/upload', methods=['POST'])
-
-
-def upload_file():
+async def upload_file():
     try:
         # Check if the POST request has the file part
         if 'file' not in request.files:
@@ -27,7 +25,7 @@ def upload_file():
             # Read the Excel file into a DataFrame
             excel_data = pd.read_excel(file)
 
-            # Validator to check the excel data 
+            # Validator to check the excel data
             validator = Validator(dataframe=excel_data)
             validator.style_dataframe()
 
@@ -42,14 +40,17 @@ def upload_file():
             writer.close()
             output.seek(0)
 
-            # Return the updated Excel file to the user
-            return send_file(output, download_name='planilha_atualizada.xlsx', as_attachment=True)
+            # Return the updated Excel file to the user asynchronously
+            return await send_file_async(output, 'planilha_atualizada.xlsx', True)
 
         else:
             return jsonify({'error': 'Invalid file format, must be .xlsx'}), 400
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+async def send_file_async(output, download_name, as_attachment):
+    return await send_file(output, download_name=download_name, as_attachment=as_attachment)
 
 if __name__ == '__main__':
     app.run(debug=True)
