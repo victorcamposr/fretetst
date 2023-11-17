@@ -8,15 +8,6 @@ app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "https://jetcalcship.web.app"}})
 
 @app.route('/upload', methods=['POST'])
-def handle_upload():
-
-    response = jsonify({"message": "Upload realizado com sucesso!"})
-    response.headers.add("Access-Control-Allow-Origin", "https://jetcalcship.web.app")
-    response.headers.add("Access-Control-Allow-Methods", "POST")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
-
-    return response
-
 
 
 def upload_file():
