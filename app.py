@@ -54,7 +54,8 @@ async def upload_file():
             return jsonify({'error': 'Invalid file format, must be .xlsx'}), 400
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Erro: {str(e)}")  # Imprime o erro no console
+        return jsonify({'error': 'Internal Server Error'}), 500
 
 async def send_file_async(output, download_name, as_attachment):
     return await send_file(output, download_name=download_name, as_attachment=as_attachment)
