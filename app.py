@@ -3,7 +3,6 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import pandas as pd
 import io
-import gc
 
 app = Flask(__name__)
 CORS(app, resources={r"/upload": {"origins": "https://jetcalcship.web.app"}})
@@ -43,9 +42,6 @@ def upload_file():
             writer.close()
             output.seek(0)
 
-            del writer, excel_data
-            gc.collect()
-
             # Return the updated Excel file to the user
             return send_file(output, download_name='planilha_atualizada.xlsx', as_attachment=True)
 
@@ -53,11 +49,9 @@ def upload_file():
             return jsonify({'error': 'Invalid file format, must be .xlsx'}), 400
 
     except Exception as e:
-        gc.collect()
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
-
 
 
